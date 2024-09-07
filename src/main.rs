@@ -11,7 +11,7 @@ struct Model {
 
 fn model(app: &App) -> Model {
     let window = app.window_rect().pad(20.0);
-    let cell_size = 4.0;
+    let cell_size = 8.0;
     let gird_size_x = (window.w() / cell_size) as usize;
     let gird_size_y = (window.h() / cell_size) as usize;
     let sandbox = Sandbox::new(cell_size, gird_size_x, gird_size_y);
@@ -29,7 +29,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.background().color(srgb(0.1, 0.1, 0.1));
 
-    model.sandbox.display(&draw, &window);
+    model.sandbox.render(&draw, &window);
 
     draw.to_frame(app, &frame).unwrap();
 }
