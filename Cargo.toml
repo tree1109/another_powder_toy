@@ -1,0 +1,17 @@
+[package]
+name = "another_powder_toy"
+version = "0.1.0"
+authors = ["ZhuangZhan"]
+edition = "2021"
+
+[dependencies]
+nannou = "0.19.0"
+rand = "0.8.5"
+
+# Enable a small amout of optimizations in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies
+[profile.dev.package."*"]
+opt-level = 3
