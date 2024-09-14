@@ -7,13 +7,19 @@ pub struct CellGrid {
 }
 
 impl CellGrid {
-    pub fn new(width: usize, height: usize) -> Self {
-        let cells = vec![Cell::default(); width * height];
+    pub fn new(size_x: usize, size_y: usize) -> Self {
+        let cells = vec![Cell::default(); size_x * size_y];
         Self {
-            size_x: width,
-            size_y: height,
+            size_x,
+            size_y,
             cells,
         }
+    }
+
+    // Setter
+    pub fn set_cell(&mut self, x: isize, y: isize, cell: Cell) {
+        let index = self.get_index(x, y);
+        self.cells[index] = cell;
     }
 
     // Getter
@@ -26,7 +32,8 @@ impl CellGrid {
     }
 
     pub fn get_cell(&self, x: isize, y: isize) -> &Cell {
-        &self.cells[self.get_index(x, y)]
+        let index = self.get_index(x, y);
+        &self.cells[index]
     }
 
     // Helper
@@ -36,5 +43,9 @@ impl CellGrid {
         }
 
         (y * self.size_x as isize + x) as usize
+    }
+
+    pub fn is_inside(&self, x: isize, y: isize) -> bool {
+        x >= 0 && y >= 0 && x < self.size_x as isize && y < self.size_y as isize
     }
 }

@@ -1,10 +1,10 @@
 use nannou::prelude::*;
 
-use super::CellType;
+use super::{CellGrid, CellType};
 
-pub fn draw_grid(draw: &Draw, origin: Vec2, size_x: usize, size_y: usize, cell_size: f32) {
-    for x in 0..size_x {
-        for y in 0..size_y {
+pub fn draw_grid(draw: &Draw, sand_world: &CellGrid, origin: Vec2, cell_size: f32) {
+    for x in 0..sand_world.get_size_x() {
+        for y in 0..sand_world.get_size_y() {
             let x = x as f32 * cell_size + cell_size / 2.0;
             let y = y as f32 * cell_size + cell_size / 2.0;
             let pos = origin + vec2(x, y);
@@ -16,6 +16,20 @@ pub fn draw_grid(draw: &Draw, origin: Vec2, size_x: usize, size_y: usize, cell_s
                 .no_fill()
                 .stroke_weight(1.0)
                 .stroke_color(srgb(0.5, 0.5, 0.5));
+        }
+    }
+}
+
+pub fn draw_cells(draw: &Draw, sand_world: &CellGrid, origin: Vec2, cell_size: f32) {
+    for x in 0..sand_world.get_size_x() {
+        for y in 0..sand_world.get_size_y() {
+            let pos = vec2(x as f32, y as f32) * cell_size + origin + (cell_size / 2.0);
+            let size = vec2(cell_size, cell_size);
+            let rect = Rect::from_xy_wh(pos, size);
+
+            let cell = sand_world.get_cell(x as isize, y as isize);
+
+            draw_cell(draw, &rect, &cell.cell_type);
         }
     }
 }
