@@ -1,4 +1,4 @@
-# This is a falling sand simulator.
+# This is a falling sand simulator
 
 ## Requirement
 
@@ -8,6 +8,6 @@
 
 Just execute command below in root directory.
 
-```
+```sh
 cargo run
 ```
