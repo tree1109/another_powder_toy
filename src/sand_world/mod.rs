@@ -99,7 +99,7 @@ impl SandSimulationSystem {
                         let can_move_bottom_right = !self.is_cell_colliding_at(cell, x + 1, y - 1);
 
                         if can_move_bottom_left && can_move_bottom_right {
-                            let is_move_left = random_range(0, 1) == 0;
+                            let is_move_left = random();
                             if is_move_left {
                                 cell_move_changes.push((x, y, x - 1, y - 1));
                             } else {
@@ -130,7 +130,6 @@ impl SandSimulationSystem {
 
                 if (new_x, new_y) != (next_new_x, next_new_y) {
                     let random_index = i - random_range(0, same_target_count);
-
                     let (x, y, new_x, new_y) = cell_move_changes[random_index];
 
                     self.move_cell_to(x, y, new_x, new_y);
