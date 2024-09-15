@@ -77,28 +77,28 @@ impl SandSimulationSystem {
 
         for x in 0..self.cell_grid.get_size_x() as isize {
             for y in 0..self.cell_grid.get_size_y() as isize {
-                let cell = self.cell_grid.get_cell(x as isize, y as isize);
+                let cell = self.cell_grid.get_cell(x, y);
                 match cell.cell_type {
                     CellType::Sand => {
-                        let is_move_bottom =
-                            !self.is_cell_colliding_at(cell, x as isize, y as isize - 1);
-                        if is_move_bottom {
+                        let can_move_bottom = !self.is_cell_colliding_at(cell, x, y - 1);
+                        if can_move_bottom {
                             cell_move_changes.push((x, y, x, y - 1));
                             continue;
                         }
 
-                        let is_move_bottom_left =
-                            !self.is_cell_colliding_at(cell, x as isize - 1, y as isize - 1);
-                        let is_move_bottom_right =
-                            !self.is_cell_colliding_at(cell, x as isize + 1, y as isize - 1);
+                        let can_move_bottom_left = !self.is_cell_colliding_at(cell, x - 1, y - 1);
+                        let can_move_bottom_right = !self.is_cell_colliding_at(cell, x + 1, y - 1);
 
-                        if is_move_bottom_left && is_move_bottom_right {
-                            let is_move_left = random_f32() < 0.5;
-                            let new_x = if is_move_left { x - 1 } else { x + 1 };
-                            cell_move_changes.push((x, y, new_x, y - 1));
-                        } else if is_move_bottom_left {
+                        if can_move_bottom_left && can_move_bottom_right {
+                            let is_move_left = random_range(0, 1) == 0;
+                            if is_move_left {
+                                cell_move_changes.push((x, y, x - 1, y - 1));
+                            } else {
+                                cell_move_changes.push((x, y, x + 1, y - 1));
+                            }
+                        } else if can_move_bottom_left {
                             cell_move_changes.push((x, y, x - 1, y - 1));
-                        } else if is_move_bottom_right {
+                        } else if can_move_bottom_right {
                             cell_move_changes.push((x, y, x + 1, y - 1));
                         }
                     }
@@ -108,34 +108,37 @@ impl SandSimulationSystem {
         }
 
         // Apply the changes.
-        cell_move_changes.sort_by(|a, b| (a.2, a.3).cmp(&(b.2, b.3)));
-        cell_move_changes.push((0, 0, 0, 0));
+        if cell_move_changes.len() > 0 {
+            cell_move_changes.sort_by(|a, b| (a.2, a.3).cmp(&(b.2, b.3)));
+            cell_move_changes.push((0, 0, 0, 0));
 
-        let mut same_target_count = 0;
-        for i in 0..cell_move_changes.len() - 1 {
-            let (_, _, new_x, new_y) = cell_move_changes[i];
-            let (_, _, next_new_x, next_new_y) = cell_move_changes[i + 1];
+            let mut same_target_count = 0;
+            for i in 0..cell_move_changes.len() - 1 {
+                let (_, _, new_x, new_y) = cell_move_changes[i];
+                let (_, _, next_new_x, next_new_y) = cell_move_changes[i + 1];
 
-            same_target_count += 1;
+                same_target_count += 1;
 
-            if new_x != next_new_x && new_y != next_new_y {
-                let random_index = i - random_range(0, same_target_count);
-                let (x, y, new_x, new_y) = cell_move_changes[random_index];
+                if (new_x, new_y) != (next_new_x, next_new_y) {
+                    let random_index = i - random_range(0, same_target_count);
 
-                self.move_cell_to(x, y, new_x, new_y);
+                    let (x, y, new_x, new_y) = cell_move_changes[random_index];
 
-                same_target_count = 0;
+                    self.move_cell_to(x, y, new_x, new_y);
+
+                    same_target_count = 0;
+                }
             }
         }
     }
 
     // Helper
-    fn move_cell_to(self: &mut Self, x: isize, y: isize, new_x: isize, new_y: isize) {
-        if self.cell_grid.is_inside(new_x, new_y) {
+    fn move_cell_to(self: &mut Self, x: isize, y: isize, to_x: isize, to_y: isize) {
+        if self.cell_grid.is_inside(to_x, to_y) {
             let cell = *self.cell_grid.get_cell(x, y);
-            let new_cell = *self.cell_grid.get_cell(new_x, new_y);
+            let new_cell = *self.cell_grid.get_cell(to_x, to_y);
             self.cell_grid.set_cell(x, y, new_cell);
-            self.cell_grid.set_cell(new_x, new_y, cell);
+            self.cell_grid.set_cell(to_x, to_y, cell);
         } else {
             self.cell_grid.set_cell(x, y, Cell::new(CellType::Air));
         }

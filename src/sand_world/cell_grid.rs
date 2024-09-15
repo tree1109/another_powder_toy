@@ -39,7 +39,10 @@ impl CellGrid {
     // Helper
     fn get_index(&self, x: isize, y: isize) -> usize {
         if x < 0 || y < 0 || x >= self.size_x as isize || y >= self.size_y as isize {
-            panic!("Index out of bounds: ({}, {})", x, y);
+            panic!(
+                "Index out of bounds: ({}, {}) which gird size is ({}, {})",
+                x, y, self.size_x, self.size_y
+            );
         }
 
         (y * self.size_x as isize + x) as usize
