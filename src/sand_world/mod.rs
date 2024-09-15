@@ -27,43 +27,51 @@ impl SandSimulationSystem {
     }
 
     pub fn update(&mut self, app: &App) {
-        if app.mouse.buttons.left().is_down() {
-            let mouse_position = app.mouse.position();
-            let grid_position = self.window_to_grid_position(mouse_position);
+        let mouse_position = app.mouse.position();
+        let is_mouse_left_down = app.mouse.buttons.left().is_down();
+        let is_mouse_right_down = app.mouse.buttons.right().is_down();
+        let is_key_ctrl_down = app.keys.down.contains(&Key::LControl);
 
-            if app.keys.down.contains(&Key::LControl)
-                && self
-                    .cell_grid
-                    .is_inside(grid_position.x as isize, grid_position.y as isize)
-            {
-                self.cell_grid.set_cell(
-                    grid_position.x as isize,
-                    grid_position.y as isize,
-                    Cell::new(CellType::Air),
-                );
-            } else {
-                self.cell_grid.set_cell(
-                    grid_position.x as isize,
-                    grid_position.y as isize,
-                    Cell::new(CellType::Sand),
-                );
+        // Get grid position from mouse position.
+        let grid_position = self.window_to_grid_position(mouse_position);
+        let is_inside_grid = self
+            .cell_grid
+            .is_inside(grid_position.x as isize, grid_position.y as isize);
+
+        if is_key_ctrl_down {
+            if is_mouse_left_down {
+                // Remove cell
+                if is_inside_grid {
+                    self.cell_grid.set_cell(
+                        grid_position.x as isize,
+                        grid_position.y as isize,
+                        Cell::new(CellType::Air),
+                    );
+                }
             }
-        } else if app.mouse.buttons.right().is_down() {
-            let mouse_position = app.mouse.position();
-            let grid_position = self.window_to_grid_position(mouse_position);
-
-            if self
-                .cell_grid
-                .is_inside(grid_position.x as isize, grid_position.y as isize)
-            {
-                self.cell_grid.set_cell(
-                    grid_position.x as isize,
-                    grid_position.y as isize,
-                    Cell::new(CellType::Wall),
-                );
+        } else {
+            if is_mouse_left_down {
+                // Place sand
+                if is_inside_grid {
+                    self.cell_grid.set_cell(
+                        grid_position.x as isize,
+                        grid_position.y as isize,
+                        Cell::new(CellType::Sand),
+                    );
+                }
+            } else if is_mouse_right_down {
+                // Place wall
+                if is_inside_grid {
+                    self.cell_grid.set_cell(
+                        grid_position.x as isize,
+                        grid_position.y as isize,
+                        Cell::new(CellType::Wall),
+                    );
+                }
             }
         }
 
+        // Update the simulation
         self.update_cell_grid();
     }
 
@@ -75,6 +83,7 @@ impl SandSimulationSystem {
     fn update_cell_grid(self: &mut Self) {
         let mut cell_move_changes: Vec<(isize, isize, isize, isize)> = vec![];
 
+        // TODO: refactor this logic to be more readable.
         for x in 0..self.cell_grid.get_size_x() as isize {
             for y in 0..self.cell_grid.get_size_y() as isize {
                 let cell = self.cell_grid.get_cell(x, y);
