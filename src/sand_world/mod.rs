@@ -15,7 +15,7 @@ pub struct SandSimulationSystem {
 }
 
 impl SandSimulationSystem {
-    pub fn new(origin: Vec2, size_x: usize, size_y: usize, cell_size: f32) -> Self {
+    pub fn new(origin: Vec2, size_x: i32, size_y: i32, cell_size: f32) -> Self {
         let cell_grid = get_test_sandworld(size_x, size_y);
 
         Self {
@@ -36,15 +36,15 @@ impl SandSimulationSystem {
         let grid_position = self.window_to_grid_position(mouse_position);
         let is_inside_grid = self
             .cell_grid
-            .is_inside(grid_position.x as isize, grid_position.y as isize);
+            .is_inside(grid_position.x as i32, grid_position.y as i32);
 
         if is_key_ctrl_down {
             if is_mouse_left_down {
                 // Remove cell
                 if is_inside_grid {
                     self.cell_grid.set_cell(
-                        grid_position.x as isize,
-                        grid_position.y as isize,
+                        grid_position.x as i32,
+                        grid_position.y as i32,
                         Cell::new(CellType::Air),
                     );
                 }
@@ -54,8 +54,8 @@ impl SandSimulationSystem {
                 // Place sand
                 if is_inside_grid {
                     self.cell_grid.set_cell(
-                        grid_position.x as isize,
-                        grid_position.y as isize,
+                        grid_position.x as i32,
+                        grid_position.y as i32,
                         Cell::new(CellType::Sand),
                     );
                 }
@@ -63,8 +63,8 @@ impl SandSimulationSystem {
                 // Place wall
                 if is_inside_grid {
                     self.cell_grid.set_cell(
-                        grid_position.x as isize,
-                        grid_position.y as isize,
+                        grid_position.x as i32,
+                        grid_position.y as i32,
                         Cell::new(CellType::Wall),
                     );
                 }
@@ -81,11 +81,11 @@ impl SandSimulationSystem {
     }
 
     fn update_cell_grid(self: &mut Self) {
-        let mut cell_move_changes: Vec<(isize, isize, isize, isize)> = vec![];
+        let mut cell_move_changes: Vec<(i32, i32, i32, i32)> = vec![];
 
         // TODO: refactor this logic to be more readable.
-        for x in 0..self.cell_grid.get_size_x() as isize {
-            for y in 0..self.cell_grid.get_size_y() as isize {
+        for x in 0..self.cell_grid.get_size_x() {
+            for y in 0..self.cell_grid.get_size_y() {
                 let cell = self.cell_grid.get_cell(x, y);
                 match cell.cell_type {
                     CellType::Sand => {
@@ -141,7 +141,7 @@ impl SandSimulationSystem {
     }
 
     // Helper
-    fn move_cell_to(self: &mut Self, x: isize, y: isize, to_x: isize, to_y: isize) {
+    fn move_cell_to(self: &mut Self, x: i32, y: i32, to_x: i32, to_y: i32) {
         if self.cell_grid.is_inside(to_x, to_y) {
             let cell = *self.cell_grid.get_cell(x, y);
             let new_cell = *self.cell_grid.get_cell(to_x, to_y);
@@ -152,7 +152,7 @@ impl SandSimulationSystem {
         }
     }
 
-    fn is_cell_colliding_at(self: &Self, cell: &Cell, x: isize, y: isize) -> bool {
+    fn is_cell_colliding_at(self: &Self, cell: &Cell, x: i32, y: i32) -> bool {
         if !self.cell_grid.is_inside(x, y) {
             return self.is_solid_border;
         }
@@ -166,12 +166,12 @@ impl SandSimulationSystem {
     }
 }
 
-fn get_test_sandworld(size_x: usize, size_y: usize) -> CellGrid {
+fn get_test_sandworld(size_x: i32, size_y: i32) -> CellGrid {
     // Initialize the sand world with test data.
     let mut sand_world = CellGrid::new(size_x, size_y);
     // Place ground.
     for x in 0..size_x {
-        sand_world.set_cell(x as isize, 0, Cell::new(CellType::Wall));
+        sand_world.set_cell(x, 0, Cell::new(CellType::Wall));
     }
     // Place some sand at middle.
     let center = vec2(size_x as f32 / 2.0, size_y as f32 / 2.0);
@@ -180,7 +180,7 @@ fn get_test_sandworld(size_x: usize, size_y: usize) -> CellGrid {
         for y in 0..size_y {
             let distance = center.distance(Vec2::new(x as f32, y as f32));
             if distance < radius {
-                sand_world.set_cell(x as isize, y as isize, Cell::new(CellType::Sand));
+                sand_world.set_cell(x, y, Cell::new(CellType::Sand));
             }
         }
     }

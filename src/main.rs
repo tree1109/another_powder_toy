@@ -15,8 +15,8 @@ fn model(app: &App) -> Model {
 
     let cell_size = 16.0;
     let origin = vec2(window.left(), window.bottom());
-    let size_x = (window.w() / cell_size) as usize;
-    let size_y = (window.h() / cell_size) as usize;
+    let size_x = (window.w() / cell_size) as i32;
+    let size_y = (window.h() / cell_size) as i32;
 
     info!("World Width: {}, Height: {}", size_x, size_y);
 

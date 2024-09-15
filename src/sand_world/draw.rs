@@ -27,7 +27,7 @@ pub fn draw_cells(draw: &Draw, sand_world: &CellGrid, origin: Vec2, cell_size: f
             let size = vec2(cell_size, cell_size);
             let rect = Rect::from_xy_wh(pos, size);
 
-            let cell = sand_world.get_cell(x as isize, y as isize);
+            let cell = sand_world.get_cell(x, y);
 
             draw_cell(draw, &rect, &cell.cell_type);
         }
