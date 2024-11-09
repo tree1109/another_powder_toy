@@ -1,3 +1,4 @@
+use another_powder_toy::debug::*;
 use another_powder_toy::sand_world::*;
 use log::info;
 use nannou::prelude::*;
@@ -8,6 +9,7 @@ fn main() {
 
 struct Model {
     sand_simulation_system: SandSimulationSystem,
+    debug_system: DebugSystem,
 }
 
 fn model(app: &App) -> Model {
@@ -22,18 +24,22 @@ fn model(app: &App) -> Model {
 
     Model {
         sand_simulation_system: SandSimulationSystem::new(origin, size_x, size_y, cell_size),
+        debug_system: DebugSystem::new(),
     }
 }
 
 fn update(app: &App, model: &mut Model, _update: Update) {
     model.sand_simulation_system.update(app);
+    model.debug_system.update(app);
 }
 
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
     draw.background().color(srgb(0.1, 0.1, 0.1));
-
-    model.sand_simulation_system.render(&draw);
-
+    // Render
+    {
+        model.sand_simulation_system.render(&draw);
+        model.debug_system.render(&draw);
+    }
     draw.to_frame(app, &frame).unwrap();
 }
