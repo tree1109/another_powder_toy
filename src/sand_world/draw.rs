@@ -37,7 +37,7 @@ pub fn draw_cells(draw: &Draw, sand_world: &CellGrid, origin: Vec2, cell_size: f
 pub fn draw_cell(draw: &Draw, cell_rect: &Rect, cell_type: &CellType) {
     match cell_type {
         CellType::Air => {
-            draw_empty_cell(draw, cell_rect, SKYBLUE);
+            // Do nothing.
         }
         CellType::Sand => {
             draw_solid_cell(draw, cell_rect, GOLD);
@@ -46,21 +46,6 @@ pub fn draw_cell(draw: &Draw, cell_rect: &Rect, cell_type: &CellType) {
             draw_solid_cell(draw, cell_rect, GRAY);
         }
     }
-}
-
-pub fn draw_empty_cell(draw: &Draw, rect: &Rect, color: Srgb<u8>) {
-    draw.rect()
-        .xy(rect.xy())
-        .wh(rect.wh())
-        .no_fill()
-        .stroke_weight(1.0)
-        .stroke_color(SKYBLUE);
-    draw.ellipse()
-        .xy(rect.xy())
-        .wh(rect.wh() * 0.5)
-        .no_fill()
-        .stroke_weight(1.0)
-        .stroke_color(color);
 }
 
 pub fn draw_solid_cell(draw: &Draw, rect: &Rect, color: Srgb<u8>) {

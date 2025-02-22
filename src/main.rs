@@ -28,9 +28,9 @@ fn model(app: &App) -> Model {
     }
 }
 
-fn update(app: &App, model: &mut Model, _update: Update) {
-    model.sand_simulation_system.update(app);
-    model.debug_system.update(app);
+fn update(app: &App, model: &mut Model, update: Update) {
+    model.sand_simulation_system.update(app, &update);
+    model.debug_system.update(app, &update);
 }
 
 fn view(app: &App, model: &Model, frame: Frame) {
@@ -38,8 +38,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(srgb(0.1, 0.1, 0.1));
     // Render
     {
-        model.sand_simulation_system.render(&draw);
-        model.debug_system.render(&draw);
+        model.sand_simulation_system.render(&draw, &frame);
+        model.debug_system.render(&draw, &frame);
     }
     draw.to_frame(app, &frame).unwrap();
 }

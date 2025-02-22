@@ -26,7 +26,7 @@ impl SandSimulationSystem {
         }
     }
 
-    pub fn update(&mut self, app: &App) {
+    pub fn update(&mut self, app: &App, _update: &Update) {
         let mouse_position = app.mouse.position();
         let is_mouse_left_down = app.mouse.buttons.left().is_down();
         let is_mouse_right_down = app.mouse.buttons.right().is_down();
@@ -75,7 +75,7 @@ impl SandSimulationSystem {
         self.update_cell_grid();
     }
 
-    pub fn render(self: &Self, draw: &Draw) {
+    pub fn render(self: &Self, draw: &Draw, _frame: &Frame) {
         draw_grid(&draw, &self.cell_grid, self.world_origin, self.cell_size);
         draw_cells(&draw, &self.cell_grid, self.world_origin, self.cell_size);
     }
@@ -169,10 +169,17 @@ impl SandSimulationSystem {
 fn get_test_sandworld(size_x: i32, size_y: i32) -> CellGrid {
     // Initialize the sand world with test data.
     let mut sand_world = CellGrid::new(size_x, size_y);
+
     // Place ground.
     for x in 0..size_x {
         sand_world.set_cell(x, 0, Cell::new(CellType::Wall));
     }
+    // Place walls.
+    for y in 0..size_y {
+        sand_world.set_cell(0, y, Cell::new(CellType::Wall));
+        sand_world.set_cell(size_x - 1, y, Cell::new(CellType::Wall));
+    }
+
     // Place some sand at middle.
     let center = vec2(size_x as f32 / 2.0, size_y as f32 / 2.0);
     let radius = 4.0;
